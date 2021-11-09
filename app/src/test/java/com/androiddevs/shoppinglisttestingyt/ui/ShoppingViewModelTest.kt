@@ -2,8 +2,10 @@ package com.androiddevs.shoppinglisttestingyt.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.androiddevs.shoppinglisttestingyt.MainCoroutineRule
+import com.androiddevs.shoppinglisttestingyt.data.remote.responses.ImageResponse
 import com.androiddevs.shoppinglisttestingyt.getOrAwaitValueTest
 import com.androiddevs.shoppinglisttestingyt.other.Constants
+import com.androiddevs.shoppinglisttestingyt.other.Resource
 import com.androiddevs.shoppinglisttestingyt.other.Status
 import com.androiddevs.shoppinglisttestingyt.repositories.FakeShoppingRepository
 import com.google.common.truth.Truth.assertThat
@@ -89,5 +91,32 @@ class ShoppingViewModelTest {
         val result = viewModel.insertShoppingItemStatus.getOrAwaitValueTest()
 
         assertThat(result.getContentIfNotHandled()?.status).isEqualTo(Status.SUCCESS)
+    }
+
+    @Test
+    fun `set url with empty string, return empty`() {
+        viewModel.setCurrentUrl("")
+
+        val result = viewModel.currentImageUrl.getOrAwaitValueTest()
+
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `set url with correct string, return same string`() {
+        viewModel.setCurrentUrl("imageQuery")
+
+        val result = viewModel.currentImageUrl.getOrAwaitValueTest()
+
+        assertThat(result).isEqualTo("imageQuery")
+    }
+
+    @Test
+    fun `search for image with correct string, return image response`() {
+        viewModel.searchForImage("imageQuery")
+
+        val result = viewModel.images.getOrAwaitValueTest()
+
+        assertThat(result.getContentIfNotHandled()?.data).isEqualTo(ImageResponse(listOf(), 0, 0))
     }
 }
